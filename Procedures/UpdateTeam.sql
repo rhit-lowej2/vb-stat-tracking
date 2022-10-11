@@ -1,5 +1,6 @@
 Use VBStatsTracker10
 Go
+-- To update a Team's name or location
 Create Procedure UpdateTeamInfo
 	@OldName varchar(50),
 	@NewName varchar(50),
