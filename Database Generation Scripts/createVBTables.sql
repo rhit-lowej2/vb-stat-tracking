@@ -41,7 +41,8 @@ CREATE Table Outcome(
 	Name varchar(20) NOT NULL,
 	Abbreviation varchar(2) NOT NULL,
 	PRIMARY KEY (OutcomeID),
-	UNIQUE(Name)
+	UNIQUE(Name),
+	UNIQUE(Abbreviation)
 )
 GO
 
@@ -61,25 +62,29 @@ CREATE Table Player (
 	GradYear int NOT NULL,
 	HittingPercentage decimal(4, 3),
 	PassingPercentage decimal(4, 3),
-	TeamID int REFERENCES Team(TeamID) ON UPDATE CASCADE ON DELETE CASCADE,
-	PRIMARY KEY (PlayerID)
+	TeamID int REFERENCES Team(TeamID) ON UPDATE NO ACTION ON DELETE NO ACTION,
+	PRIMARY KEY (PlayerID),
+	CHECK(Number > 0)
 )
 
 CREATE Table Position (
 	PositionID int IDENTITY(1, 1),
 	PositionName varchar(20) NOT NULL,
-	PRIMARY KEY (PositionID)
+	PRIMARY KEY (PositionID),
+	CHECK(PositionName IN ('Libero','Setter', 'Outside Hitter', 'Opposite Hitter', 'Middle Blocker', 'Defensive Specialist'))
 )
 
 CREATE Table Practice (
 	PracticeID int IDENTITY(1, 1),
-	TeamID int REFERENCES Team(TeamID),
-	PracticeDate date,
+	TeamID int REFERENCES Team(TeamID) ON UPDATE CASCADE ON DELETE CASCADE,
+	PracticeDate date NOT NULL,
 	PRIMARY KEY(PracticeID)
 )
 
 Create Table Match(
     MatchID int IDENTITY(1,1),
+	HomeTeamID int REFERENCES Team(TeamID) ON UPDATE CASCADE ON DELETE CASCADE,
+	AwayTeamID int REFERENCES Team(TeamID) ON UPDATE NO ACTION ON DELETE NO ACTION,
     Result varchar(5) NOT NULL
         Check(Result='Win' or Result ='Loss'),
     Date date NOT NULL,
@@ -112,33 +117,26 @@ Create Table Attends(
     ON DELETE CASCADE
 )
 
-CREATE Table Plays(
-	TeamID int REFERENCES Team(TeamID),
-	MatchID int REFERENCES Match(MatchID),
-	isHomeTeam bit,
-	PRIMARY KEY (TeamID, MatchID)
-)
-GO
 
 CREATE Table PlaysIn(
-	PlayerID int REFERENCES Player(PlayerID),
-	MatchID int REFERENCES Match(MatchID),
-	isStarter bit,
+	PlayerID int REFERENCES Player(PlayerID) ON UPDATE CASCADE ON DELETE CASCADE,
+	MatchID int REFERENCES Match(MatchID) ON UPDATE CASCADE ON DELETE CASCADE,
+	isStarter bit NOT NULL,
 	PRIMARY KEY (PlayerID, MatchID)
 )
 GO
 
 CREATE Table Hit(
 	HitID int IDENTITY(1,1),
-	PlayerID int REFERENCES Player(PlayerID) NOT NULL,
-	LeadsTo int References Hit(HitID),
-	OutcomeID int REFERENCES Outcome(OutcomeID) NOT NULL,
+	PlayerID int NOT NULL REFERENCES Player(PlayerID) ON UPDATE CASCADE ON DELETE CASCADE,
+	LeadsTo int References Hit(HitID) ON UPDATE NO ACTION ON DELETE NO ACTION,
+	OutcomeID int REFERENCES Outcome(OutcomeID) ON UPDATE CASCADE ON DELETE CASCADE,
 	PRIMARY KEY (HitID)
 )
 GO
 
 CREATE Table HServe(
-	HitID int REFERENCES Hit(HitID),
+	HitID int REFERENCES Hit(HitID) ON UPDATE CASCADE ON DELETE CASCADE,
 	Position varchar(10) NOT NULL,
 	PRIMARY KEY (HitID),
 	CHECK (Position in ('left', 'right'))
@@ -146,27 +144,27 @@ CREATE Table HServe(
 GO
 
 CREATE Table HServeReceive(
-	HitID int REFERENCES Hit(HitID),
+	HitID int REFERENCES Hit(HitID) ON UPDATE CASCADE ON DELETE CASCADE,
 	Depth char(1) NOT NULL,
 	PRIMARY KEY (HitID)
 )
 GO
 
 CREATE Table HAttack (
-	HitID int REFERENCES Hit(HitID),
+	HitID int REFERENCES Hit(HitID) ON UPDATE CASCADE ON DELETE CASCADE,
 	Type varchar(3) NOT NULL,
 	PRIMARY KEY (HitID)
 )
 GO
 
 CREATE Table HDig (
-	HitID int REFERENCES Hit(HitID),
+	HitID int REFERENCES Hit(HitID) ON UPDATE CASCADE ON DELETE CASCADE,
 	PRIMARY KEY (HitID)
 )
 GO
 
 CREATE Table HSet (
-	HitID int REFERENCES Hit(HitID),
+	HitID int REFERENCES Hit(HitID) ON UPDATE CASCADE ON DELETE CASCADE,
 	SetNumber int NOT NULL,
 	PRIMARY KEY (HitID)
 )

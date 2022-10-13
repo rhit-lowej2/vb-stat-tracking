@@ -19,11 +19,18 @@ Begin
 		RETURN (2)
 	End
 
+	if(EXISTS (SELECT Name FROM Team WHERE [Name] = @NewName))
+	Begin
+		PRINT 'ERROR: The new team name already exists';
+		RETURN (3)
+	End
+
 	if @Location is null Or @Location = ''
 	Begin
 		PRINT 'ERROR: Team location cannot be null or empty';
-		RETURN (3)
+		RETURN (4)
 	End
+
 	Update Team
 	Set [Name]=@NewName, [Location]=@Location
 	Where [Name]=@OldName
