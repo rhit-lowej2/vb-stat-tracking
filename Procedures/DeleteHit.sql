@@ -1,5 +1,5 @@
-Create Procedure DeleteHit
-	@HitID int
+Create Procedure DeleteLastHit
+	
 As
 Begin
 
