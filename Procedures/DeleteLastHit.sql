@@ -1,5 +1,6 @@
-Create Procedure DeleteLastHit
-	@HitID int
+CREATE Procedure DeleteLastHit
+	@HitID int,
+	@PreviousHitID int output
 As
 Begin
 
@@ -11,16 +12,16 @@ Begin
 	if not exists(Select * From Hit Where HitID = @HitID)
 	Begin
 		Print'Error: Hit does not exist!'
-		Return 2
+		Return (2)
 	End
 
-	Declare @PreviousHitID int;
-	Select @PreviousHitID HitID From Hit Where LeadsTo = @HitID
+	Select @PreviousHitID = HitID From Hit Where LeadsTo = @HitID
 	if @PreviousHitID is not null
-		Update Hit Set LeadsTo = null Where HitID=@PreviousHitID
-
+	BEGIN
+		Update Hit Set LeadsTo = null Where HitID = @PreviousHitID
+	END
 	Delete From Hit Where HitID = @HitID
 	
 	Print 'Deleted Hit'
-	Return 0
+	Return (0)
 End

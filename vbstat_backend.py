@@ -11,6 +11,17 @@ def CallStoredProc(conn, procName, *args):
              SELECT @ret""" % (procName, ','.join(['?'] * len(args)))
     return int(conn.execute(sql, args).fetchone()[0])
 
+def CallDeleteHit(conn, *args):
+    sql = """SET NOCOUNT ON
+             DECLARE @ret int
+             DECLARE @output int
+             EXEC @ret = DeleteLastHit
+                @HitID = ?,
+                @PreviousHitID = @output OUTPUT
+             SELECT @ret, @output"""
+    output = conn.execute(sql, args).fetchone()
+    return (int(output[0]), output[1])
+
 def CallInsertHit(conn, *args):
     sql = """SET NOCOUNT ON
              DECLARE @ret int
@@ -30,9 +41,22 @@ def CallInsertHit(conn, *args):
     return (int(output[0]), output[1])
 
 def getSproc():
-    print("input sproc name")
+    menu = """0) administrative actions
+1) InsertHit
+2) DeleteLastHit"""
+    actionmenu = """1) InsertTeam
+2) UpdateTeam
+3) DeleteTeam
+    """
+    print("Pick an action:")
+    print(menu)
     user_input = input()
     sproc_name = user_input.split(" ")[0]
+    if sproc_name == "0":
+        print("Pick an action:")
+        print(actionmenu)
+        user_input = input()
+        sproc_name = sproc_name + user_input.split(" ")[0]
     return sproc_name
 
 def insert_team():
@@ -45,9 +69,14 @@ def insert_team():
     print("returned " + str(output))
     cnxn.commit()
 
+def delete_hit(hitid):
+    print("hitid = " + str(hitid))
+    output = CallDeleteHit(cursor, hitid)
+    print("returned " + str(output))
+    cnxn.commit()
+
 def insert_hit(hitid):
     done = False
-    print("first plus" + str(hitid))
     position, setnumber, depth, attacktype = None, None, None, None
     print("input hit type")
     hittype = input()
@@ -92,19 +121,21 @@ def insert_hit(hitid):
     if errorcode != 0:
         print("errorcode " + str(errorcode))
     hitid = output[1]
-    print("string plus: " + str(hitid))
     print("returned " + str(output))
     cnxn.commit()
     return hitid, done
 
-def handleCommand(sproc_name):
-    lasthitid = None
-    if sproc_name == "InsertTeam":
+def handleCommand(sproc_name, lasthitidIn):
+    lasthitid = lasthitidIn
+    if sproc_name == "01":
         insert_team()
-    elif sproc_name == "InsertHit":
+    elif sproc_name == "1":
         done = False
         while not done:
             lasthitid, done = insert_hit(lasthitid)
+        return lasthitid
+    elif sproc_name == "2":
+        delete_hit(lasthitid)
             
 
 
@@ -132,7 +163,8 @@ cursor = cnxn.cursor()
 #     row = rows.fetchone()
 
 sproc = getSproc()
+lasthitid = None
 while(sproc):
-    handleCommand(sproc)
+    lasthitid = handleCommand(sproc, lasthitid)
     sproc = getSproc()
 
