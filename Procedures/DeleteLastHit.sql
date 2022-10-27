@@ -1,5 +1,5 @@
 Create Procedure DeleteLastHit
-	
+	@HitID int
 As
 Begin
 
@@ -14,7 +14,13 @@ Begin
 		Return 2
 	End
 
+	Declare @PreviousHitID int;
+	Select @PreviousHitID HitID From Hit Where LeadsTo = @HitID
+	if @PreviousHitID is not null
+		Update Hit Set LeadsTo = null Where HitID=@PreviousHitID
+
 	Delete From Hit Where HitID = @HitID
+	
 	Print 'Deleted Hit'
 	Return 0
 End
