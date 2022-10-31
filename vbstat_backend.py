@@ -47,6 +47,7 @@ def getSproc():
     actionmenu = """1) InsertTeam
 2) UpdateTeam
 3) DeleteTeam
+4) InsertPlayer
     """
     print("Pick an action:")
     print(menu)
@@ -67,6 +68,36 @@ def insert_team():
     location = input()
     output = CallStoredProc(cursor, "InsertTeam", name, location)
     print("returned " + str(output))
+    cnxn.commit()
+
+def update_team():
+    print("input new team name")
+    name = input()
+    print("input location")
+    location = input()
+
+    output = CallStoredProc(cursor, "UpdateTeam", TEAM_NAME, name, location)
+    print("returned " + str(output))
+    cnxn.commit()
+
+def delete_team():
+    output = CallStoredProc(cursor, "DeleteTeam", TEAM_NAME)
+    print("returned " + str(output))
+    cnxn.commit()
+
+def insert_player():
+    HittingPercentage, PassingPercentage = None, None
+    print("input player name")
+    name = input()
+    print("input player number")
+    number = int(input())
+    print("is Captain? (1/0)")
+    isCap = int(input())
+    print("GradYear")
+    GradYear = int(input())
+    
+    output = CallStoredProc(cursor, "InsertPlayer", name, number, isCap, None, None, TEAM_NAME, GradYear)
+    print("returned "+ str(output))
     cnxn.commit()
 
 def delete_hit(hitid):
@@ -136,6 +167,14 @@ def handleCommand(sproc_name, lasthitidIn):
         return lasthitid
     elif sproc_name == "2":
         delete_hit(lasthitid)
+    elif sproc_name == "02":
+        print("Working on Updating Team...")
+    elif sproc_name == "03":
+        print("Working on Deleting Team...")
+    elif sproc_name == "04":
+        insert_player()
+        
+
             
 
 

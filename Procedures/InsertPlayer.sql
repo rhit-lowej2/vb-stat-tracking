@@ -6,7 +6,7 @@ Create Procedure InsertPlayer
 	@isCaptain bit = 0,
 	@HittingPercentage decimal(4,3) = null,
 	@PassingPercentage decimal(4,3) = null,
-	@TeamID int = null,
+	@TeamName varchar(50),
 	@GradYear int
 As
 Begin
@@ -28,6 +28,8 @@ Begin
 		RETURN (3)
 	End
 
+	Declare @TeamID int;
+	Select @TeamID =TeamID  From Team Where TeamName=@TeamName
 	if (@TeamID is not null And Not Exists (Select * From Team Where TeamID = @TeamID))
 	Begin
 		Print 'Error: Team does not exist';
