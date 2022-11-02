@@ -44,10 +44,18 @@ def getSproc():
     menu = """0) administrative actions
 1) InsertHit
 2) DeleteLastHit"""
-    actionmenu = """1) InsertTeam
+    actionmenu = """1) Team
+2)Player
+3) Back   
+    """
+    teamMenu = """1) InsertTeam
 2) UpdateTeam
-3) DeleteTeam
-4) InsertPlayer
+3) DeleteTeam 
+3) Back  
+    """
+    playerMenu = """1) InsertPlayer
+2) DeletePlayer
+3) Back
     """
     print("Pick an action:")
     print(menu)
@@ -58,6 +66,16 @@ def getSproc():
         print(actionmenu)
         user_input = input()
         sproc_name = sproc_name + user_input.split(" ")[0]
+        if sproc_name == "01":
+            print("Pick an action:")
+            print(teamMenu)
+            user_input = input()
+            sproc_name = sproc_name + user_input.split(" ")[0]
+        if sproc_name == "02":
+            print("Pick an action:")
+            print(playerMenu)
+            user_input = input()
+            sproc_name = sproc_name + user_input.split(" ")[0]
     return sproc_name
 
 def insert_team():
@@ -71,17 +89,21 @@ def insert_team():
     cnxn.commit()
 
 def update_team():
+    print("input original team name")
+    oldName = input()
     print("input new team name")
     name = input()
     print("input location")
     location = input()
 
-    output = CallStoredProc(cursor, "UpdateTeam", TEAM_NAME, name, location)
+    output = CallStoredProc(cursor, "UpdateTeamInfo", oldName, name, location)
     print("returned " + str(output))
     cnxn.commit()
 
 def delete_team():
-    output = CallStoredProc(cursor, "DeleteTeam", TEAM_NAME)
+    print("input team name")
+    name = input()
+    output = CallStoredProc(cursor, "DeleteTeam", name)
     print("returned " + str(output))
     cnxn.commit()
 
@@ -90,13 +112,22 @@ def insert_player():
     print("input player name")
     name = input()
     print("input player number")
-    number = int(input())
+    number = input()
     print("is Captain? (1/0)")
-    isCap = int(input())
+    isCap =input()
     print("GradYear")
-    GradYear = int(input())
-    
-    output = CallStoredProc(cursor, "InsertPlayer", name, number, isCap, None, None, TEAM_NAME, GradYear)
+    GradYear = input()
+
+    output = CallStoredProc(cursor, "InsertPlayer", name, number, isCap, HittingPercentage, PassingPercentage, TEAM_NAME, GradYear)
+    print("returned "+ str(output))
+    cnxn.commit()
+
+def delete_player():
+    print("input player name")
+    name = input()
+    print("input player number")
+    number = input()
+    output = CallStoredProc(cursor, "InsertPlayer", name, number)
     print("returned "+ str(output))
     cnxn.commit()
 
@@ -158,7 +189,7 @@ def insert_hit(hitid):
 
 def handleCommand(sproc_name, lasthitidIn):
     lasthitid = lasthitidIn
-    if sproc_name == "01":
+    if sproc_name == "011":
         insert_team()
     elif sproc_name == "1":
         done = False
@@ -167,12 +198,14 @@ def handleCommand(sproc_name, lasthitidIn):
         return lasthitid
     elif sproc_name == "2":
         delete_hit(lasthitid)
-    elif sproc_name == "02":
-        print("Working on Updating Team...")
-    elif sproc_name == "03":
-        print("Working on Deleting Team...")
-    elif sproc_name == "04":
+    elif sproc_name == "012":
+        update_team()
+    elif sproc_name == "013":
+        delete_team()
+    elif sproc_name == "021":
         insert_player()
+    elif sproc_name == "022":
+        delete_player()
         
 
             
