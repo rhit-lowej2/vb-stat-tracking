@@ -45,8 +45,9 @@ def getSproc():
 1) InsertHit
 2) DeleteLastHit"""
     actionmenu = """1) Team
-2)Player
-3) Back   
+2) Player
+3) Practice
+4) Back   
     """
     teamMenu = """1) InsertTeam
 2) UpdateTeam
@@ -55,6 +56,10 @@ def getSproc():
     """
     playerMenu = """1) InsertPlayer
 2) DeletePlayer
+3) Back
+    """
+    practiceMenu = """1) InsertPractice
+2) DeletePractice
 3) Back
     """
     print("Pick an action:")
@@ -71,9 +76,14 @@ def getSproc():
             print(teamMenu)
             user_input = input()
             sproc_name = sproc_name + user_input.split(" ")[0]
-        if sproc_name == "02":
+        elif sproc_name == "02":
             print("Pick an action:")
             print(playerMenu)
+            user_input = input()
+            sproc_name = sproc_name + user_input.split(" ")[0]
+        elif sproc_name == "03":
+            print("Pick an action:")
+            print(practiceMenu)
             user_input = input()
             sproc_name = sproc_name + user_input.split(" ")[0]
     return sproc_name
@@ -128,6 +138,24 @@ def delete_player():
     print("input player number")
     number = input()
     output = CallStoredProc(cursor, "InsertPlayer", name, number)
+    print("returned "+ str(output))
+    cnxn.commit()
+
+def insert_practice():
+    print("input team name")
+    name = input()
+    print("input pratice date (mm/dd/yyyy)")
+    date = input()
+    output = CallStoredProc(cursor, "InsertPractice", name, date)
+    print("returned "+ str(output))
+    cnxn.commit()
+
+def delete_practice():
+    print("input team name")
+    name = input()
+    print("input pratice date (mm/dd/yyyy)")
+    date = input()
+    output = CallStoredProc(cursor, "DeletePractice", name, date)
     print("returned "+ str(output))
     cnxn.commit()
 
@@ -206,6 +234,10 @@ def handleCommand(sproc_name, lasthitidIn):
         insert_player()
     elif sproc_name == "022":
         delete_player()
+    elif sproc_name == "031":
+        insert_practice()
+    elif sproc_name == "032":
+        delete_practice()
         
 
             
