@@ -1,6 +1,6 @@
 Create Procedure InsertAttack
 	@HitID int,
-	@Type varchar(3)
+	@Type varchar(10)
 AS
 Begin
 	if @HitID is null

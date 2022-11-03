@@ -1,6 +1,7 @@
 CREATE Procedure InsertHit
 	@PlayerName varchar(20),
 	@TeamName varchar(50),
+	@PracticeDate date,
 	@CameFrom int = null,
 	@OutcomeAbb varchar(2),
 	@HitType varchar(5),
@@ -34,10 +35,18 @@ Begin
 			return 3
 		End
 
+	DECLARE @PracticeID int
+	SELECT @PracticeID = PracticeID From Practice Where (PracticeDate = @PracticeDate and TeamID = @TeamID)
+	IF @PracticeID is null
+		Begin
+			Print 'ERROR: Practice does not exist'
+			return 4
+		End
+
 	if @OutcomeAbb is null Or @OutcomeAbb=''
 	Begin
 		PRINT 'ERROR: OutcomeAbbreviation cannot be null or empty';
-		RETURN 4
+		RETURN 5
 	End
 
 	Declare @OutcomeID int
@@ -45,11 +54,11 @@ Begin
 	if @OutcomeID is null
 		Begin
 			Print 'ERROR: outcome does not exist';
-			return 5
+			return 6
 		End
 
 
-	Insert Into Hit(PlayerID, OutcomeID) values(@PlayerID, @OutcomeID)
+	Insert Into Hit(PlayerID, PracticeID, OutcomeID) values(@PlayerID, @PracticeID, @OutcomeID)
 	
 	SELECT @return = @@Identity
 	Print(@return)
@@ -57,7 +66,7 @@ Begin
 	IF @HitType is null Or @HitType=''
 	Begin
 		PRINT 'ERROR: HitType cannot be null or empty';
-		RETURN 6
+		RETURN 7
 	End
 
 	IF @HitType = 'Serve'
@@ -65,7 +74,7 @@ Begin
 		IF @Position is null Or @Position=''
 		Begin
 			PRINT 'ERROR: Position cannot be null or empty';
-			RETURN 7
+			RETURN 8
 		End
 		Insert Into HServe values(@return, @Position)
 	END
@@ -75,7 +84,7 @@ Begin
 		IF @Depth is null Or @Depth=''
 		Begin
 			PRINT 'ERROR: Depth cannot be null or empty';
-			RETURN 7
+			RETURN 8
 		End
 		Insert Into HServeReceive values(@return, @Depth)
 	END
@@ -90,7 +99,7 @@ Begin
 		IF @SetNumber is null OR @SetNumber NOT IN (1,2,3,4,5,6,8,9)
 		Begin
 			PRINT 'ERROR: SetNumber cannot be null and must be in the values (1,2,3,4,5,6,8,9)';
-			RETURN 7
+			RETURN 8
 		End
 		Insert Into HSet values(@return, @SetNumber)
 	END
@@ -100,7 +109,7 @@ Begin
 		IF @Type is null Or @Type=''
 		Begin
 			PRINT 'ERROR: Type cannot be null or empty';
-			RETURN 7
+			RETURN 8
 		End
 		Insert Into HAttack values(@return, @Type)
 	END

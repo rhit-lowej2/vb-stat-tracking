@@ -20,6 +20,12 @@ Begin
 			RETURN (2)
 		End
 
+	if exists(Select * From Practice Where (PracticeDate=@PracticeDate and TeamID=@TeamID))
+	Begin
+		Print 'Error: practice already exists'
+		return 3
+	End
+
 	Insert into Practice values(@TeamID,@PracticeDate)
 	Print 'Added Practice'
 	return 0

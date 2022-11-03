@@ -1,8 +1,10 @@
 from getpass import getuser
 from webbrowser import get
 import pyodbc
+from datetime import date, datetime as dt
 
 TEAM_NAME = "Rose-Hulman Institute of Technology"
+practice_date = date.today()
 
 def CallStoredProc(conn, procName, *args):
     sql = """SET NOCOUNT ON
@@ -28,6 +30,7 @@ def CallInsertHit(conn, *args):
              DECLARE @output int
              EXEC @ret = InsertHit @PlayerName = ?,
                 @TeamName = ?,
+                @PracticeDate = ?,
                 @CameFrom = ?,
                 @OutcomeAbb = ?,
                 @HitType = ?,
@@ -61,8 +64,9 @@ def getSproc():
 4) Back
     """
     practiceMenu = """1) Start Practice
-2) Delete Practice
-3) Back
+2) Resume Practice
+3) Delete Practice
+4) Back
     """
     outcomeMenu = """1) Add Outcome
 2) Back
@@ -76,26 +80,31 @@ def getSproc():
         print(actionmenu)
         user_input = input()
         sproc_name = sproc_name + user_input.split(" ")[0]
+
         if sproc_name == "01":
             print("Pick an action:")
             print(teamMenu)
             user_input = input()
             sproc_name = sproc_name + user_input.split(" ")[0]
+
         elif sproc_name == "02":
             print("Pick an action:")
             print(playerMenu)
             user_input = input()
             sproc_name = sproc_name + user_input.split(" ")[0]
+
         elif sproc_name == "03":
             print("Pick an action:")
             print(practiceMenu)
             user_input = input()
             sproc_name = sproc_name + user_input.split(" ")[0]
+
         elif sproc_name == "04":
             print("Pick an action:")
             print(outcomeMenu)
             user_input = input()
             sproc_name = sproc_name + user_input.split(" ")[0]
+
     return sproc_name
 
 def insert_team():
@@ -153,17 +162,25 @@ def delete_player():
 
 def insert_practice():
     name = TEAM_NAME
-    print("input practice date (mm/dd/yyyy)")
-    date = input()
-    output = CallStoredProc(cursor, "InsertPractice", name, date)
+    print("input practice date (mm/dd/yy)")
+    inputdate = input()
+    global practice_date
+    practice_date = dt.strptime(inputdate, "%m/%d/%y")
+    output = CallStoredProc(cursor, "InsertPractice", name, inputdate)
     print("returned "+ str(output))
     cnxn.commit()
 
+def resume_practice():
+    print("input practice date (mm/dd/yy)")
+    inputdate = input()
+    global practice_date
+    practice_date = dt.strptime(inputdate, "%m/%d/%y")
+    
 def delete_practice():
     name = TEAM_NAME
-    print("input practice date (mm/dd/yyyy)")
-    date = input()
-    output = CallStoredProc(cursor, "DeletePractice", name, date)
+    print("input practice date (mm/dd/yy)")
+    inputdate = input()
+    output = CallStoredProc(cursor, "DeletePractice", name, inputdate)
     print("returned "+ str(output))
     cnxn.commit()
 
@@ -229,10 +246,12 @@ def insert_hit(hitid):
     print("input outcome abbreviation")
     outcome= input()
 
-    if outcome in "kbe":
+    if outcome in ['k', 'tk', 'b', 'e']:
         done = True
 
-    output = CallInsertHit(cursor, name, teamname, hitid, outcome, hittype, position, setnumber, depth, attacktype)
+    print(practice_date)
+    print(practice_date.strftime("%m/%d/%y"))
+    output = CallInsertHit(cursor, name, teamname, practice_date, hitid, outcome, hittype, position, setnumber, depth, attacktype)
     errorcode = output[0]
     if errorcode != 0:
         print("errorcode " + str(errorcode))
@@ -279,11 +298,13 @@ def handleCommand(sproc_name, lasthitidIn):
     elif sproc_name == "031":
         insert_practice()
     elif sproc_name == "032":
+        resume_practice()
+    elif sproc_name == "033":
         delete_practice()
     elif sproc_name == "041":
         insert_outcome()
-    elif sproc_name == "042":
-        delete_outcome()
+    # elif sproc_name == "042":
+    #     delete_outcome()
         
     
 
