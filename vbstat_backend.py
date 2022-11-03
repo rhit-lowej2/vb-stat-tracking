@@ -61,7 +61,8 @@ def getSproc():
     playerMenu = """1) Insert Player
 2) Delete Player
 3) Update Player Positions
-4) Back
+4) Delete Player Positions
+5) Back
     """
     practiceMenu = """1) Start Practice
 2) Resume Practice
@@ -273,6 +274,15 @@ def insert_playsposition(name=None):
         print("input position name, or hit enter to end")
         posname = input()
 
+def delete_playsposition():
+    print("input player name")
+    name = input()
+    print("input position name")
+    posname = input()
+    output = CallStoredProc(cursor, "DeletePlaysPosition", posname, name, TEAM_NAME)
+    print("returned " + str(output))
+    cnxn.commit()
+
 
 def handleCommand(sproc_name, lasthitidIn):
     lasthitid = lasthitidIn
@@ -295,6 +305,8 @@ def handleCommand(sproc_name, lasthitidIn):
         delete_player()
     elif sproc_name == "023":
         insert_playsposition()
+    elif sproc_name == "024":
+        delete_playsposition()
     elif sproc_name == "031":
         insert_practice()
     elif sproc_name == "032":

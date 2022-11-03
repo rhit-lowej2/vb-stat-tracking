@@ -1,7 +1,7 @@
 Create Procedure DeletePlaysPosition
 	@PositionName varchar(30),
 	@PlayerName varchar(20),
-	@PlayerNumber int
+	@TeamName varchar(50)
 As
 Begin
 	Print 'Hint: PositionName has to be: Defensive Specialist, Middle Blocker, Opposite Hitter, Outside Hitter, Setter, or Libero';
@@ -20,14 +20,18 @@ Begin
 			return 2
 		End
 
-	Declare @PlayerID int
-	Select @PlayerID = PlayerID From Player As P Where (P.Name = @PlayerName And P.Number = @PlayerNumber)
-
 	if @PlayerName is null Or @PlayerName=''
 		Begin
 			PRINT 'ERROR: player cannot be null or empty';
 			RETURN (3)
 		End
+
+	DECLARE @TeamID int
+	Select @TeamID = TeamID From Team Where (Team.Name = @TeamName)
+
+	Declare @PlayerID int
+	Select @PlayerID = PlayerID From Player As P Where (P.Name = @PlayerName And P.TeamID = @TeamID)
+
 	if @PlayerID is null
 		Begin
 			Print 'Error: Player does not exist' 
