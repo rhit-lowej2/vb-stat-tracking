@@ -142,9 +142,8 @@ def delete_player():
     cnxn.commit()
 
 def insert_practice():
-    print("input team name")
-    name = input()
-    print("input pratice date (mm/dd/yyyy)")
+    name = TEAM_NAME
+    print("input practice date (mm/dd/yyyy)")
     date = input()
     output = CallStoredProc(cursor, "InsertPractice", name, date)
     print("returned "+ str(output))

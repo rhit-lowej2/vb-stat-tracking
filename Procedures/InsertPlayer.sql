@@ -30,6 +30,7 @@ Begin
 
 	Declare @TeamID int;
 	Select @TeamID =TeamID  From Team Where TeamName=@TeamName
+	
 	if (@TeamID is not null And Not Exists (Select * From Team Where TeamID = @TeamID))
 	Begin
 		Print 'Error: Team does not exist';

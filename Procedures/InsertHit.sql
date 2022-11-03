@@ -49,7 +49,7 @@ Begin
 		End
 
 
-	Insert Into Hit	values(@PlayerID,null,@OutcomeID)
+	Insert Into Hit(PlayerID, OutcomeID) values(@PlayerID, @OutcomeID)
 	
 	SELECT @return = @@Identity
 	Print(@return)
