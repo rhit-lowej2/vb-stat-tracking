@@ -4,7 +4,7 @@ Create Procedure InsertPosition
 	@PositionName varchar(30)
 As
 Begin
-	Print 'Alert: PositionName has to be: Defensive Specialist, Middle Blocker, Opposite Hitter, Outside Hitter, Setter, or Libero';
+	-- Print 'Alert: PositionName has to be: Defensive Specialist, Middle Blocker, Opposite Hitter, Outside Hitter, Setter, or Libero';
 	Print ' '
 	if @PositionName is null Or @PositionName = ''
 	Begin

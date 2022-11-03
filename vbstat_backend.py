@@ -42,25 +42,30 @@ def CallInsertHit(conn, *args):
 
 def getSproc():
     menu = """0) administrative actions
-1) InsertHit
-2) DeleteLastHit"""
+1) Insert Hit
+2) Undo Last Hit"""
     actionmenu = """1) Team
 2) Player
 3) Practice
-4) Back   
+4) Outcome
+5) Back
     """
-    teamMenu = """1) InsertTeam
-2) UpdateTeam
-3) DeleteTeam 
+    teamMenu = """1) Insert Team
+2) Update Team
+3) Delete Team 
 3) Back  
     """
-    playerMenu = """1) InsertPlayer
-2) DeletePlayer
+    playerMenu = """1) Insert Player
+2) Delete Player
+3) Update Player Positions
+4) Back
+    """
+    practiceMenu = """1) Start Practice
+2) Delete Practice
 3) Back
     """
-    practiceMenu = """1) InsertPractice
-2) DeletePractice
-3) Back
+    outcomeMenu = """1) Add Outcome
+2) Back
     """
     print("Pick an action:")
     print(menu)
@@ -84,6 +89,11 @@ def getSproc():
         elif sproc_name == "03":
             print("Pick an action:")
             print(practiceMenu)
+            user_input = input()
+            sproc_name = sproc_name + user_input.split(" ")[0]
+        elif sproc_name == "04":
+            print("Pick an action:")
+            print(outcomeMenu)
             user_input = input()
             sproc_name = sproc_name + user_input.split(" ")[0]
     return sproc_name
@@ -127,9 +137,9 @@ def insert_player():
     isCap =input()
     print("GradYear")
     GradYear = input()
-
     output = CallStoredProc(cursor, "InsertPlayer", name, number, isCap, HittingPercentage, PassingPercentage, TEAM_NAME, GradYear)
     print("returned "+ str(output))
+    insert_playsposition(name)
     cnxn.commit()
 
 def delete_player():
@@ -150,11 +160,28 @@ def insert_practice():
     cnxn.commit()
 
 def delete_practice():
-    print("input team name")
-    name = input()
-    print("input pratice date (mm/dd/yyyy)")
+    name = TEAM_NAME
+    print("input practice date (mm/dd/yyyy)")
     date = input()
     output = CallStoredProc(cursor, "DeletePractice", name, date)
+    print("returned "+ str(output))
+    cnxn.commit()
+
+def insert_outcome():
+    print("input outcome name")
+    name = input()
+    print("input abbreviation")
+    abbr = input()
+    print("input description")
+    desc = input()
+    output = CallStoredProc(cursor, "InsertOutcome", desc, name, abbr)
+    print("returned "+ str(output))
+    cnxn.commit()
+
+def delete_outcome():
+    print("input outcome name")
+    name = input()
+    output = CallStoredProc(cursor, "DeleteOutcome", name)
     print("returned "+ str(output))
     cnxn.commit()
 
@@ -214,6 +241,20 @@ def insert_hit(hitid):
     cnxn.commit()
     return hitid, done
 
+def insert_playsposition(name=None):
+    if not name:
+        print("input player name")
+        name = input()
+    print("input position name, or hit enter to end")
+    posname = input()
+    while posname:
+        output = CallStoredProc(cursor, "InsertPlaysPosition", posname, name, TEAM_NAME)
+        print("returned " + str(output))
+        cnxn.commit()
+        print("input position name, or hit enter to end")
+        posname = input()
+
+
 def handleCommand(sproc_name, lasthitidIn):
     lasthitid = lasthitidIn
     if sproc_name == "011":
@@ -233,11 +274,18 @@ def handleCommand(sproc_name, lasthitidIn):
         insert_player()
     elif sproc_name == "022":
         delete_player()
+    elif sproc_name == "023":
+        insert_playsposition()
     elif sproc_name == "031":
         insert_practice()
     elif sproc_name == "032":
         delete_practice()
+    elif sproc_name == "041":
+        insert_outcome()
+    elif sproc_name == "042":
+        delete_outcome()
         
+    
 
             
 

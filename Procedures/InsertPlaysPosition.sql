@@ -3,7 +3,7 @@ Go
 Create Procedure InsertPlaysPosition
 	@PositionName varchar(30),
 	@PlayerName varchar(20),
-	@PlayerNumber int
+	@TeamName varchar(50)
 As
 Begin
 	Print 'Hint: PositionName has to be: Defensive Specialist, Middle Blocker, Opposite Hitter, Outside Hitter, Setter, or Libero';
@@ -22,8 +22,11 @@ Begin
 			return 2
 		End
 
+	DECLARE @TeamID int
+	Select @TeamID = TeamID From Team Where (Team.Name = @TeamName)
+
 	Declare @PlayerID int
-	Select @PlayerID = PlayerID From Player As P Where (P.Name = @PlayerName And P.Number = @PlayerNumber)
+	Select @PlayerID = PlayerID From Player As P Where (P.Name = @PlayerName And P.TeamID = @TeamID)
 
 	if @PlayerName is null Or @PlayerName=''
 		Begin
