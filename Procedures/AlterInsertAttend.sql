@@ -1,6 +1,16 @@
-Create Procedure InsertAttends
+USE [VBStatsTracker10]
+GO
+
+/****** Object:  StoredProcedure [dbo].[InsertAttends]    Script Date: 11/3/2022 3:42:26 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+Alter Procedure InsertAttends
 	@PlayerName varchar(20),
-	@TeamName int,
+	@TeamName varchar(40),
 	@Date date
 As
 Begin
@@ -47,3 +57,4 @@ Begin
 	Return 0
 End
 GO
+

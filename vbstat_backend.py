@@ -51,12 +51,13 @@ def getSproc():
 2) Player
 3) Practice
 4) Outcome
-5) Back
+5) Attendance
+6) Back
     """
     teamMenu = """1) Insert Team
 2) Update Team
 3) Delete Team 
-3) Back  
+4) Back  
     """
     playerMenu = """1) Insert Player
 2) Delete Player
@@ -69,6 +70,9 @@ def getSproc():
 4) Back
     """
     outcomeMenu = """1) Add Outcome
+2) Back
+    """
+    attendMenu = """1) Add Attendance
 2) Back
     """
     print("Pick an action:")
@@ -104,7 +108,11 @@ def getSproc():
             print(outcomeMenu)
             user_input = input()
             sproc_name = sproc_name + user_input.split(" ")[0]
-
+        elif sproc_name == "05":
+            print("Pick an action:")
+            print(attendMenu)
+            user_input = input()
+            sproc_name = sproc_name + user_input.split(" ")[0]
     return sproc_name
 
 def insert_team():
@@ -156,7 +164,17 @@ def delete_player():
     name = input()
     print("input player number")
     number = input()
-    output = CallStoredProc(cursor, "InsertPlayer", name, number)
+    output = CallStoredProc(cursor, "DeletePlayer", name, number)
+    print("returned "+ str(output))
+    cnxn.commit()
+
+def insert_attends():
+    print("input player name")
+    pname = input()
+    tname = TEAM_NAME
+    print("input pratice date")
+    date = input()
+    output = CallStoredProc(cursor, "InsertAttends", pname, tname, date)
     print("returned "+ str(output))
     cnxn.commit()
 
@@ -305,6 +323,8 @@ def handleCommand(sproc_name, lasthitidIn):
         insert_outcome()
     # elif sproc_name == "042":
     #     delete_outcome()
+    elif sproc_name == "051":
+        insert_attends()
         
     
 
