@@ -73,7 +73,8 @@ def getSproc():
 2) Back
     """
     attendMenu = """1) Add Attendance
-2) Back
+2) Delete Attendance
+3) Back
     """
     print("Pick an action:")
     print(menu)
@@ -175,6 +176,16 @@ def insert_attends():
     print("input pratice date")
     date = input()
     output = CallStoredProc(cursor, "InsertAttends", pname, tname, date)
+    print("returned "+ str(output))
+    cnxn.commit()
+
+def delete_attends():
+    print("input player name")
+    pname = input()
+    tname = TEAM_NAME
+    print("input pratice date")
+    date = input()
+    output = CallStoredProc(cursor, "DeleteAttends", pname, tname, date)
     print("returned "+ str(output))
     cnxn.commit()
 
@@ -325,6 +336,8 @@ def handleCommand(sproc_name, lasthitidIn):
     #     delete_outcome()
     elif sproc_name == "051":
         insert_attends()
+    elif sproc_name == "052":
+        delete_attends()
         
     
 
