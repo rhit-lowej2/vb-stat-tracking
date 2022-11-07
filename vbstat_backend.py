@@ -240,7 +240,22 @@ def display_team():
     cnxn.commit()
 
 def display_player(): 
+    print("Team: "+ TEAM_NAME)
     for row in CallStoredProcDisplay(cursor, "DisplayPlayer", TEAM_NAME):
+        print(row)
+    print(" ")
+    cnxn.commit()
+
+def display_practice(): 
+    print("Team: "+TEAM_NAME)
+    for row in CallStoredProcDisplay(cursor, "DisplayPractice", TEAM_NAME):
+        print(row)
+    print(" ")
+    cnxn.commit()
+
+def display_attendance():
+    print("Team: "+TEAM_NAME)
+    for row in CallStoredProcDisplay(cursor, "DisplayAttends", TEAM_NAME):
         print(row)
     print(" ")
     cnxn.commit()
