@@ -239,6 +239,12 @@ def display_team():
     print(" ")
     cnxn.commit()
 
+def display_player(): 
+    for row in CallStoredProcDisplay(cursor, "DisplayPlayer", TEAM_NAME):
+        print(row)
+    print(" ")
+    cnxn.commit()
+
 def insert_outcome():
     print("input outcome name")
     name = input()
