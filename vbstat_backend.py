@@ -13,6 +13,13 @@ def CallStoredProc(conn, procName, *args):
              SELECT @ret""" % (procName, ','.join(['?'] * len(args)))
     return int(conn.execute(sql, args).fetchone()[0])
 
+def CallStoredProcDisplay(conn, procName, *args):
+    sql = """SET NOCOUNT ON
+             DECLARE @ret int
+             EXEC @ret = %s %s
+             SELECT @ret""" % (procName, ','.join(['?'] * len(args)))
+    return conn.execute(sql, args).fetchall()
+
 def CallDeleteHit(conn, *args):
     sql = """SET NOCOUNT ON
              DECLARE @ret int
@@ -45,8 +52,9 @@ def CallInsertHit(conn, *args):
 
 def getSproc():
     menu = """0) administrative actions
-1) Insert Hit
-2) Undo Last Hit"""
+1) Display Info 
+2) Insert Hit
+3) Undo Last Hit"""
     actionmenu = """1) Team
 2) Player
 3) Practice
@@ -76,6 +84,12 @@ def getSproc():
     attendMenu = """1) Add Attendance
 2) Delete Attendance
 3) Back
+    """
+    displaymenu = """1) Display All Team
+2) Display Player
+3) Display Practice
+4) Display Attendance
+5) Back
     """
     print("Pick an action:")
     print(menu)
@@ -115,6 +129,11 @@ def getSproc():
             print(attendMenu)
             user_input = input()
             sproc_name = sproc_name + user_input.split(" ")[0]
+    elif sproc_name == "1":
+        print("Pick an action:")
+        print(displaymenu)
+        user_input = input()
+        sproc_name = sproc_name + user_input.split(" ")[0]
     return sproc_name
 
 def insert_team():
@@ -212,6 +231,12 @@ def delete_practice():
     inputdate = input()
     output = CallStoredProc(cursor, "DeletePractice", name, inputdate)
     print("returned "+ str(output))
+    cnxn.commit()
+
+def display_team(): 
+    for row in CallStoredProcDisplay(cursor, "DisplayTeam"):
+        print(row)
+    print(" ")
     cnxn.commit()
 
 def insert_outcome():
@@ -317,12 +342,20 @@ def handleCommand(sproc_name, lasthitidIn):
     lasthitid = lasthitidIn
     if sproc_name == "011":
         insert_team()
-    elif sproc_name == "1":
+    elif sproc_name == "11":
+        display_team()
+    elif sproc_name == "12":
+        display_player()
+    elif sproc_name == "13":
+        display_practice()
+    elif sproc_name == "14":
+        display_attendance()
+    elif sproc_name == "2":
         done = False
         while not done:
             lasthitid, done = insert_hit(lasthitid)
         return lasthitid
-    elif sproc_name == "2":
+    elif sproc_name == "3":
         delete_hit(lasthitid)
     elif sproc_name == "012":
         update_team()
