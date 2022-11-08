@@ -54,7 +54,9 @@ def getSproc():
     menu = """0) administrative actions
 1) Display Info 
 2) Insert Hit
-3) Undo Last Hit"""
+3) Undo Last Hit
+4) Display Hits
+"""
     actionmenu = """1) Team
 2) Player
 3) Practice
@@ -260,6 +262,14 @@ def display_attendance():
     print(" ")
     cnxn.commit()
 
+def display_hits(): 
+    print("input practice id")
+    id = input()
+    for row in CallStoredProcDisplay(cursor, "DisplayHits", id):
+        print(row)
+    print(" ")
+    cnxn.commit()
+
 def insert_outcome():
     print("input outcome name")
     name = input()
@@ -404,6 +414,8 @@ def handleCommand(sproc_name, lasthitidIn):
         insert_attends()
     elif sproc_name == "052":
         delete_attends()
+    elif sproc_name == "4":
+        display_hits()
         
     
 
