@@ -34,6 +34,8 @@ IF OBJECT_ID('dbo.Team') IS NOT NULL
 DROP Table Team
 GO
 
+Use VolleyballTrackerTester10
+Go
 --Creating Tables
 CREATE Table Outcome(
 	OutcomeID int IDENTITY(1,1),
@@ -478,6 +480,49 @@ Begin
 End
 Go
 
+Create Procedure UpdatePlaysPosition
+	@PositionName varchar(30),
+	@PlayerName varchar(20),
+	@PlayerNumber int
+As
+Begin
+	Print 'Hint: PositionName has to be: Defensive Specialist, Middle Blocker, Opposite Hitter, Outside Hitter, Setter, or Libero';
+	Print ' '
+	Declare @PositionID int
+	Select @PositionID = PositionID From Position Where PositionName = @PositionName
+
+	if @PositionName is null Or @PositionName=''
+		Begin
+			PRINT 'ERROR: Position cannot be null or empty';
+			RETURN (1)
+		End
+	if @PositionID is null
+		Begin
+			Print 'Error: Position does not exist' 
+			return 2
+		End
+
+	Declare @PlayerID int
+	Select @PlayerID = PlayerID From Player As P Where (P.Name = @PlayerName And P.Number = @PlayerNumber)
+
+	if @PlayerName is null Or @PlayerName=''
+		Begin
+			PRINT 'ERROR: player cannot be null or empty';
+			RETURN (3)
+		End
+	if @PlayerID is null
+		Begin
+			Print 'Error: Player does not exist' 
+			return 4
+		End
+
+	Update PlaysPosition
+    Set PositionID = @PositionID, PlayerID = PlayerID
+	Print 'Updated PlaysPosition!'
+	return 0
+End
+Go
+
 Create Procedure InsertPlayer
 	@Name varchar(20),
 	@Number int,
@@ -507,7 +552,7 @@ Begin
 	End
 
 	Declare @TeamID int;
-	Select @TeamID =TeamID  From Team Where TeamName=@TeamName
+	Select @TeamID =TeamID  From Team Where Name=@TeamName
 	
 	if (@TeamID is not null And Not Exists (Select * From Team Where TeamID = @TeamID))
 	Begin
@@ -532,7 +577,7 @@ Create Procedure UpdatePlayer
 As
 Begin
     Declare @PlayerID int
-	Select @PlayerID = PlayerID From Player As P Where (P.Name = @PlayerName And P.Number = @PlayerNumber)
+	Select @PlayerID = PlayerID From Player As P Where (P.Name = @Name And P.Number = @Number)
 
 	if @Name is null Or @Name = ''
 	Begin
@@ -713,49 +758,6 @@ Begin
 
 	Insert into PlaysPosition values(@PositionID,@PlayerID)
 	Print 'Added!'
-	return 0
-End
-Go
-
-Create Procedure UpdatePlaysPosition
-	@PositionName varchar(30),
-	@PlayerName varchar(20),
-	@PlayerNumber int
-As
-Begin
-	Print 'Hint: PositionName has to be: Defensive Specialist, Middle Blocker, Opposite Hitter, Outside Hitter, Setter, or Libero';
-	Print ' '
-	Declare @PositionID int
-	Select @PositionID = PositionID From Position Where PositionName = @PositionName
-
-	if @PositionName is null Or @PositionName=''
-		Begin
-			PRINT 'ERROR: Position cannot be null or empty';
-			RETURN (1)
-		End
-	if @PositionID is null
-		Begin
-			Print 'Error: Position does not exist' 
-			return 2
-		End
-
-	Declare @PlayerID int
-	Select @PlayerID = PlayerID From Player As P Where (P.Name = @PlayerName And P.Number = @PlayerNumber)
-
-	if @PlayerName is null Or @PlayerName=''
-		Begin
-			PRINT 'ERROR: player cannot be null or empty';
-			RETURN (3)
-		End
-	if @PlayerID is null
-		Begin
-			Print 'Error: Player does not exist' 
-			return 4
-		End
-
-	Update PlaysPosition
-    Set PositionID = @PositionID, PlayerID = PlayerID
-	Print 'Updated PlaysPosition!'
 	return 0
 End
 Go
