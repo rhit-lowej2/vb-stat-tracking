@@ -1,0 +1,11 @@
+Name,Abbreviation,Description
+kill,k,kill
+error,e,hitting error
+block,b,blocked and lost point
+in play,ip,in play
+tip,t,"tip, roll, or throw that does not result in a kill"
+tip kill,tk,"tip, roll, or throw that results in a kill"
+3 option pass,3,Perfect pass
+2 option pass,2,Good pass
+1 option pass,1,Playable pass
+passing error,0,Passing error

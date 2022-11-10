@@ -2,53 +2,11 @@ from getpass import getuser
 from webbrowser import get
 import pyodbc
 from datetime import date, datetime as dt
+from sql_utils import CallStoredProc, CallDeleteHit, CallInsertHit, CallStoredProcDisplay
+from crud_utils import * 
 
 TEAM_NAME = "Rose-Hulman Institute of Technology"
 practice_date = date.today()
-
-def CallStoredProc(conn, procName, *args):
-    sql = """SET NOCOUNT ON
-             DECLARE @ret int
-             EXEC @ret = %s %s
-             SELECT @ret""" % (procName, ','.join(['?'] * len(args)))
-    return int(conn.execute(sql, args).fetchone()[0])
-
-def CallStoredProcDisplay(conn, procName, *args):
-    sql = """SET NOCOUNT ON
-             DECLARE @ret int
-             EXEC @ret = %s %s
-             SELECT @ret""" % (procName, ','.join(['?'] * len(args)))
-    return conn.execute(sql, args).fetchall()
-
-def CallDeleteHit(conn, *args):
-    sql = """SET NOCOUNT ON
-             DECLARE @ret int
-             DECLARE @output int
-             EXEC @ret = DeleteLastHit
-                @HitID = ?,
-                @PreviousHitID = @output OUTPUT
-             SELECT @ret, @output"""
-    output = conn.execute(sql, args).fetchone()
-    return (int(output[0]), output[1])
-
-def CallInsertHit(conn, *args):
-    sql = """SET NOCOUNT ON
-             DECLARE @ret int
-             DECLARE @output int
-             EXEC @ret = InsertHit @PlayerName = ?,
-                @TeamName = ?,
-                @PracticeDate = ?,
-                @CameFrom = ?,
-                @OutcomeAbb = ?,
-                @HitType = ?,
-	            @Position = ?,
-                @SetNumber = ?,
-                @Depth = ?,
-                @Type = ?,
-                @return = @output OUTPUT
-             SELECT @ret, @output"""
-    output = conn.execute(sql, args).fetchone()
-    return (int(output[0]), output[1])
 
 def getSproc():
     menu = """0) administrative actions
@@ -139,12 +97,9 @@ def getSproc():
 def insert_team():
     print("input team name")
     name = input()
-
     print("input location")
     location = input()
-    output = CallStoredProc(cursor, "InsertTeam", name, location)
-    print("returned " + str(output))
-    cnxn.commit()
+    insert_team_util(cnxn, cursor, name, location)
 
 def update_team():
     print("input original team name")
@@ -154,16 +109,13 @@ def update_team():
     print("input location")
     location = input()
 
-    output = CallStoredProc(cursor, "UpdateTeamInfo", oldName, name, location)
-    print("returned " + str(output))
-    cnxn.commit()
+    update_team_util(cnxn, cursor, oldName, name, location)
 
 def delete_team():
     print("input team name")
     name = input()
-    output = CallStoredProc(cursor, "DeleteTeam", name)
-    print("returned " + str(output))
-    cnxn.commit()
+    
+    delete_team_util(cnxn, cursor, name)
 
 def insert_player():
     HittingPercentage, PassingPercentage = None, None
@@ -175,49 +127,47 @@ def insert_player():
     isCap =input()
     print("GradYear")
     GradYear = input()
-    output = CallStoredProc(cursor, "InsertPlayer", name, number, isCap, HittingPercentage, PassingPercentage, TEAM_NAME, GradYear)
-    print("returned "+ str(output))
+    
+    insert_player_util(cnxn, cursor, name, number, isCap, GradYear, TEAM_NAME)
+
     insert_playsposition(name)
-    cnxn.commit()
 
 def delete_player():
     print("input player name")
     name = input()
-    print("input player number")
-    number = input()
-    output = CallStoredProc(cursor, "DeletePlayer", name, number)
-    print("returned "+ str(output))
-    cnxn.commit()
+    # print("input team name")
+    # team_name = input()
+    team_name = TEAM_NAME
+    
+    delete_player_util(cnxn, cursor, name, team_name)
 
 def insert_attends():
     print("input player name")
-    pname = input()
-    tname = TEAM_NAME
+    name = input()
+    team_name = TEAM_NAME
     print("input pratice date")
     date = input()
-    output = CallStoredProc(cursor, "InsertAttends", pname, tname, date)
-    print("returned "+ str(output))
-    cnxn.commit()
+    
+    insert_attends_util(cnxn, cursor, name, team_name, date)
 
 def delete_attends():
     print("input player name")
-    pname = input()
-    tname = TEAM_NAME
+    name = input()
+    team_name = TEAM_NAME
     print("input pratice date")
     date = input()
-    output = CallStoredProc(cursor, "DeleteAttends", pname, tname, date)
-    print("returned "+ str(output))
-    cnxn.commit()
+    
+    delete_attends_util(cnxn, cursor, name, team_name, date)
 
 def insert_practice():
-    name = TEAM_NAME
+    team_name = TEAM_NAME
     print("input practice date (mm/dd/yy)")
     inputdate = input()
     global practice_date
-    practice_date = dt.strptime(inputdate, "%m/%d/%y")
-    output = CallStoredProc(cursor, "InsertPractice", name, inputdate)
-    print("returned "+ str(output))
-    cnxn.commit()
+    if inputdate:
+        practice_date = dt.strptime(inputdate, "%m/%d/%y")
+    
+    insert_practice_util(cnxn, cursor, team_name, date)
 
 def resume_practice():
     print("input practice date (mm/dd/yy)")
@@ -226,63 +176,60 @@ def resume_practice():
     practice_date = dt.strptime(inputdate, "%m/%d/%y")
     
 def delete_practice():
-    name = TEAM_NAME
+    team_name = TEAM_NAME
     print("input practice date (mm/dd/yy)")
-    inputdate = input()
-    output = CallStoredProc(cursor, "DeletePractice", name, inputdate)
-    print("returned "+ str(output))
-    cnxn.commit()
+    date = input()
+    
+    delete_practice_util(cnxn, cursor, team_name, date)
 
 def display_team(): 
     for row in CallStoredProcDisplay(cursor, "DisplayTeam"):
         print(row)
     print(" ")
-    cnxn.commit()
 
 def display_player(): 
     print("Team: "+ TEAM_NAME)
     for row in CallStoredProcDisplay(cursor, "DisplayPlayer", TEAM_NAME):
         print(row)
     print(" ")
-    cnxn.commit()
 
 def display_practice(): 
     print("Team: "+TEAM_NAME)
     for row in CallStoredProcDisplay(cursor, "DisplayPractice", TEAM_NAME):
         print(row)
     print(" ")
-    cnxn.commit()
 
 def display_attendance():
     print("Team: "+TEAM_NAME)
     for row in CallStoredProcDisplay(cursor, "DisplayAttends", TEAM_NAME):
         print(row)
     print(" ")
-    cnxn.commit()
 
 def insert_outcome():
     print("input outcome name")
     name = input()
-    print("input abbreviation")
-    abbr = input()
     print("input description")
     desc = input()
-    output = CallStoredProc(cursor, "InsertOutcome", desc, name, abbr)
-    print("returned "+ str(output))
-    cnxn.commit()
+    print("input abbreviation")
+    abbr = input()
+    
+    insert_outcome_util(cnxn, cursor, name, desc, abbr)
 
 def delete_outcome():
     print("input outcome name")
     name = input()
-    output = CallStoredProc(cursor, "DeleteOutcome", name)
-    print("returned "+ str(output))
-    cnxn.commit()
+    
+    delete_outcome_util(cnxn, cursor, name)
+
+def insert_position():
+    print("input position name")
+    position = input()
+    
+    insert_position_util(cnxn, cursor, position)
 
 def delete_hit(hitid):
-    print("hitid = " + str(hitid))
-    output = CallDeleteHit(cursor, hitid)
-    print("returned " + str(output))
-    cnxn.commit()
+
+    delete_hit_util(cnxn, cursor, hitid)
 
 def insert_hit(hitid):
     done = False
@@ -295,7 +242,8 @@ def insert_hit(hitid):
     abbr_map = {"s": "Sophia Harrison",
                 "j": "Jillian Gregg",
                 "liz": "Elizabeth Canon"}
-    name = abbr_map[name]
+    if name in abbr_map:
+        name = abbr_map[name]
 
     teamname = TEAM_NAME
 
@@ -325,8 +273,8 @@ def insert_hit(hitid):
     if outcome in ['k', 'tk', 'b', 'e']:
         done = True
 
-    print(practice_date)
-    print(practice_date.strftime("%m/%d/%y"))
+    # print(practice_date)
+    # print(practice_date.strftime("%m/%d/%y"))
     output = CallInsertHit(cursor, name, teamname, practice_date, hitid, outcome, hittype, position, setnumber, depth, attacktype)
     errorcode = output[0]
     if errorcode != 0:
@@ -377,7 +325,8 @@ def handleCommand(sproc_name, lasthitidIn):
             lasthitid, done = insert_hit(lasthitid)
         return lasthitid
     elif sproc_name == "3":
-        delete_hit(lasthitid)
+        lasthitid = delete_hit(lasthitid)
+        return lasthitid
     elif sproc_name == "012":
         update_team()
     elif sproc_name == "013":
@@ -404,11 +353,6 @@ def handleCommand(sproc_name, lasthitidIn):
         insert_attends()
     elif sproc_name == "052":
         delete_attends()
-        
-    
-
-            
-
 
 server = 'titan.csse.rose-hulman.edu' 
 database = 'VBStatsTracker10'
@@ -432,10 +376,11 @@ cursor = cnxn.cursor()
 # while row:
 #     print(row)
 #     row = rows.fetchone()
-
-sproc = getSproc()
-lasthitid = None
-while(sproc):
-    lasthitid = handleCommand(sproc, lasthitid)
+def main():
     sproc = getSproc()
+    lasthitid = None
+    while(sproc):
+        lasthitid = handleCommand(sproc, lasthitid)
+        sproc = getSproc()
 
+main()
