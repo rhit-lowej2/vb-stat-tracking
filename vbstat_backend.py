@@ -423,8 +423,8 @@ def handleCommand(sproc_name, lasthitidIn):
 
 
 server = 'titan.csse.rose-hulman.edu' 
-#database = 'VolleyballTrackerTester10'
-database = 'VBStatsTracker10'
+database = 'VBTrackerTester10'
+#database = 'VBStatsTracker10'
 username = 'VBStatsAdmin'
 password = 'help-deed-spin-road-2'
 

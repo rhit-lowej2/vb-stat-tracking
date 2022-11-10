@@ -1,4 +1,4 @@
-Create Database VolleyballTrackerTester10
+Create Database VBTrackerTester10
 
 IF OBJECT_ID('dbo.Plays') IS NOT NULL
 DROP Table Plays
@@ -34,8 +34,14 @@ IF OBJECT_ID('dbo.Team') IS NOT NULL
 DROP Table Team
 GO
 
-Use VolleyballTrackerTester10
+Use VBTrackerTester10
 Go
+
+Create Login VBStatsAdmin With Password = 'help-deed-spin-road-2'
+Create User VBStatsAdmin For Login VBStatsAdmin 
+exec sp_addrolemember 'db_owner', 'VBStatsAdmin'; 
+GO
+
 --Creating Tables
 CREATE Table Outcome(
 	OutcomeID int IDENTITY(1,1),
