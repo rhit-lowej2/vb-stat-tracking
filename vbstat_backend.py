@@ -5,11 +5,11 @@ from datetime import date, datetime as dt
 from sql_utils import CallStoredProc, CallDeleteHit, CallInsertHit, CallStoredProcDisplay
 from crud_utils import *
 
-TEAM_NAME = "Rose-Hulman"
+TEAM_NAME = "RHIT"
 practice_date = date.today()
 
 server = 'titan.csse.rose-hulman.edu'
-database = 'VBTrackerTester12'
+database = 'VBTrackerFinalDemo'
 # database = 'VBStatsTracker10'
 username = 'VBStatsAdmin'
 password = 'help-deed-spin-road-2'
@@ -178,7 +178,7 @@ def insert_practice():
     if inputdate:
         practice_date = dt.strptime(inputdate, "%m/%d/%y")
 
-    insert_practice_util(cnxn, cursor, team_name, date)
+    insert_practice_util(cnxn, cursor, team_name, practice_date)
 
 def resume_practice():
     print("input practice date (mm/dd/yy)")
@@ -189,9 +189,9 @@ def resume_practice():
 def delete_practice():
     team_name = TEAM_NAME
     print("input practice date (mm/dd/yy)")
-    date = input()
+    input_date = input()
 
-    delete_practice_util(cnxn, cursor, team_name, date)
+    delete_practice_util(cnxn, cursor, team_name, input_date)
 
 def display_team():
     for row in CallStoredProcDisplay(cursor, "DisplayTeam"):

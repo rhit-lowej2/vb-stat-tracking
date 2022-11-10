@@ -30,7 +30,7 @@ players = pd.read_csv("Data/Roster.csv")
 practice_data = pd.read_csv("Data/Practice 9-27.csv")
 
 server = 'titan.csse.rose-hulman.edu'
-database = 'VBTrackerTester12'
+database = 'VBTrackerFinalDemo'
 # database = 'VBStatsTracker10'
 username = 'VBStatsAdmin'
 password = 'help-deed-spin-road-2'
@@ -91,4 +91,4 @@ for index, row in practice_data.iterrows():
             insert_hit_util(cnxn, cursor, hitter, team_name, "09/27/22", output[1], result, "Attack", None, None, None, "hit")
         else:
             insert_hit_util(cnxn, cursor, hitter, team_name, "09/27/22", output[1], result, "Attack", None, None, None, "tip")
-        print(output)
+        # print(output)
