@@ -1,4 +1,11 @@
 Create Database VBTrackerTester10
+GO
+Use VBTrackerTester10
+GO
+
+Create User VBStatsAdmin For Login VBStatsAdmin 
+grant exec to VBStatsAdmin
+GO
 
 IF OBJECT_ID('dbo.Plays') IS NOT NULL
 DROP Table Plays
@@ -32,14 +39,6 @@ IF OBJECT_ID('dbo.Player') IS NOT NULL
 DROP Table Player
 IF OBJECT_ID('dbo.Team') IS NOT NULL
 DROP Table Team
-GO
-
-Use VBTrackerTester10
-Go
-
-Create Login VBStatsAdmin With Password = 'help-deed-spin-road-2'
-Create User VBStatsAdmin For Login VBStatsAdmin 
-exec sp_addrolemember 'db_owner', 'VBStatsAdmin'; 
 GO
 
 --Creating Tables
@@ -232,7 +231,7 @@ Go
 
 Create Procedure DeleteAttends
 	@PlayerName varchar(20),
-	@TeamName int,
+	@TeamName varchar(50),
 	@Date date
 As
 Begin
@@ -240,7 +239,7 @@ Begin
 	Declare @TeamID int;
 	Select @TeamID =TeamID  From Team as T Where T.Name=@TeamName
 	
-	if (@TeamID is not null And Not Exists (Select * From Team Where TeamID = @TeamID))
+	if @TeamName is null or @TeamID is null
 	Begin
 		Print 'Error: Team does not exist';
 		Return (1)
@@ -289,7 +288,7 @@ CREATE Procedure InsertHit
 	@Position varchar(5) = null,
 	@SetNumber int = null,
 	@Depth char(1) = null,
-	@Type varchar(3) = null,
+	@Type varchar(10) = null,
 	@return int output
 AS
 Begin
@@ -435,8 +434,8 @@ End
 Go
 
 Create Procedure InsertOutcome
-	@Description varchar(200),
 	@Name varchar(20),
+	@Description varchar(200),
 	@Abbreviation varchar(2)
 AS
 Begin
@@ -457,6 +456,12 @@ Begin
 		PRINT 'ERROR: Abbreviation cannot be null or empty';
 		RETURN (3)
 	End
+
+	if Exists(SELECT * from Outcome WHERE Name = @Name)
+	BEGIN
+		PRINT 'ERROR: Duplicate outcome not allowed';
+		RETURN (4)
+	END
 
 	Insert Into Outcome values(@Description, @Name, @Abbreviation)
 	Print 'Added outcome!'
@@ -621,7 +626,7 @@ Go
 
 Create Procedure DeletePlayer
 	@Name varchar(20),
-	@Number int
+	@TeamName varchar(50)
 As
 Begin
 	if @Name is null Or @Name = ''
@@ -630,18 +635,22 @@ Begin
 		RETURN (1)
 	End
 
-	if @Number is null
+	Declare @TeamID int;
+	Select @TeamID =TeamID  From Team Where [Name]=@TeamName
+
+	if @TeamName is null or @TeamID is null
 	Begin
-		PRINT 'ERROR: Player number cannot be null';
+		PRINT 'ERROR: That team does not exist';
 		RETURN (2)
 	End
-	if not exists(Select * From Player Where (Name=@Name and Number=@Number))
+
+	if not exists(Select * From Player Where (Name=@Name and TeamID=@TeamID))
 	Begin
 		Print 'Error: Player does not exist'
 		return 3
 	End
 
-	Delete From Player Where (Name=@Name and Number=@Number)
+	Delete From Player Where (Name=@Name and TeamID=@TeamID)
 	Print 'Player deleted!'
 	return 0
 End
@@ -1083,10 +1092,11 @@ As
 Go
 
 Create Procedure DisplayHits
-	@PracticeID int
+	@PracticeDate date
 As
-	
-	if (@PracticeID is null Or not exists(Select* From Practice as P Where P.PracticeID = @PracticeID))
+	DECLARE @PracticeID int
+	Select @PracticeID = P.PracticeID From Practice as P Where P.PracticeDate = @PracticeDate
+	if (@PracticeID is null or @PracticeDate is null)
 	Begin
 		Print 'Error: practice cannot be null or practice does not exist';
 		Return (1)

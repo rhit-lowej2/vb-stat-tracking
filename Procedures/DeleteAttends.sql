@@ -1,6 +1,6 @@
 Create Procedure DeleteAttends
 	@PlayerName varchar(20),
-	@TeamName int,
+	@TeamName varchar(50),
 	@Date date
 As
 Begin
@@ -8,7 +8,7 @@ Begin
 	Declare @TeamID int;
 	Select @TeamID =TeamID  From Team as T Where T.Name=@TeamName
 	
-	if (@TeamID is not null And Not Exists (Select * From Team Where TeamID = @TeamID))
+	if @TeamName is null or @TeamID is null
 	Begin
 		Print 'Error: Team does not exist';
 		Return (1)

@@ -5,8 +5,17 @@ from datetime import date, datetime as dt
 from sql_utils import CallStoredProc, CallDeleteHit, CallInsertHit, CallStoredProcDisplay
 from crud_utils import *
 
-TEAM_NAME = "Rose-Hulman Institute of Technology"
+TEAM_NAME = "Rose-Hulman"
 practice_date = date.today()
+
+server = 'titan.csse.rose-hulman.edu'
+database = 'VBTrackerTester12'
+# database = 'VBStatsTracker10'
+username = 'VBStatsAdmin'
+password = 'help-deed-spin-road-2'
+
+cnxn = pyodbc.connect('DRIVER={ODBC Driver 18 for SQL Server};SERVER='+server+';DATABASE='+database+';ENCRYPT=no;UID='+username+';PWD='+ password)
+cursor = cnxn.cursor()
 
 def getSproc():
     menu = """0) administrative actions
@@ -208,12 +217,13 @@ def display_attendance():
     print(" ")
 
 def display_hits():
-    print("input practice id")
-    id = input()
-    for row in CallStoredProcDisplay(cursor, "DisplayHits", id):
+    print("input practice date")
+    inputdate = input()
+    if inputdate:
+        inputdate = dt.strptime(inputdate, "%m/%d/%y")
+    for row in CallStoredProcDisplay(cursor, "DisplayHits", inputdate):
         print(row)
     print(" ")
-    cnxn.commit()
 
 def insert_outcome():
     print("input outcome name")
@@ -250,12 +260,29 @@ def insert_hit(hitid):
     print("input player name")
     name = input()
     abbr_map = {"s": "Sophia Harrison",
+                "liz": "Elizabeth Canon",
+                "leah": "Aaliyah Jones",
+                "kate": "Kate Wood",
+                "allie": "Allie Fults",
+                "ky": "Kylie Rathbun",
+                "koop": "Sophia Koop",
                 "j": "Jillian Gregg",
-                "liz": "Elizabeth Canon"}
+                "ang": "Angela Potts",
+                "eb": "Emily Buchta",
+                "syd": "Sydney Naibauer",
+                "mw": "Megan Weber",
+                "ja": "Jayden O'Dell",
+                "cl": "Claudia Rowan",
+                "lily": "Lily Ebright",
+                "mk": "Megan Korte",
+                "mo": "Marina Cadilli",
+                "ellie": "Ellie Harshany",
+                "m": "McKenzie Gross"
+                }
     if name in abbr_map:
         name = abbr_map[name]
 
-    teamname = TEAM_NAME
+    team_name = TEAM_NAME
 
     if hittype == "Serve":
         print("input position")
@@ -285,36 +312,33 @@ def insert_hit(hitid):
 
     # print(practice_date)
     # print(practice_date.strftime("%m/%d/%y"))
-    output = CallInsertHit(cursor, name, teamname, practice_date, hitid, outcome, hittype, position, setnumber, depth, attacktype)
+    output = insert_hit_util(cnxn, cursor, name, team_name, practice_date, hitid, outcome, hittype, position, setnumber, depth, attacktype)
     errorcode = output[0]
     if errorcode != 0:
         print("errorcode " + str(errorcode))
     hitid = output[1]
-    print("returned " + str(output))
-    cnxn.commit()
+    # print("returned " + str(output))
     return hitid, done
 
 def insert_playsposition(name=None):
+    team_name = TEAM_NAME
     if not name:
         print("input player name")
         name = input()
     print("input position name, or hit enter to end")
     posname = input()
     while posname:
-        output = CallStoredProc(cursor, "InsertPlaysPosition", posname, name, TEAM_NAME)
-        print("returned " + str(output))
-        cnxn.commit()
+        insert_playsposition_util(cnxn, cursor, name, posname, team_name)
         print("input position name, or hit enter to end")
         posname = input()
 
 def delete_playsposition():
+    team_name = TEAM_NAME
     print("input player name")
     name = input()
     print("input position name")
     posname = input()
-    output = CallStoredProc(cursor, "DeletePlaysPosition", posname, name, TEAM_NAME)
-    print("returned " + str(output))
-    cnxn.commit()
+    delete_playsposition_util(cnxn, cursor, name, posname, team_name)
 
 
 def handleCommand(sproc_name, lasthitidIn):
@@ -366,19 +390,6 @@ def handleCommand(sproc_name, lasthitidIn):
     elif sproc_name == "4":
         display_hits()
 
-
-
-
-
-
-server = 'titan.csse.rose-hulman.edu'
-database = 'VBTrackerTester10'
-#database = 'VBStatsTracker10'
-username = 'VBStatsAdmin'
-password = 'help-deed-spin-road-2'
-
-cnxn = pyodbc.connect('DRIVER={ODBC Driver 18 for SQL Server};SERVER='+server+';DATABASE='+database+';ENCRYPT=no;UID='+username+';PWD='+ password)
-cursor = cnxn.cursor()
 
 # output = CallStoredProc(cursor, 'InsertTeam', 'Rose-Hulman', 'Terre Haute, IN')
 # print(output)

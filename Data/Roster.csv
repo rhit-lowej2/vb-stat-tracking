@@ -1,24 +1,24 @@
-﻿Team,Player Name,Player Number,Player Position,Player Abbreviation
-Rose-Hulman,"Gregg, Jillian",13,Setter/Opposite Hitter,j
-Rose-Hulman,"Harrison, Sophia",9,Setter,s
-Rose-Hulman,"Canon, Elizabeth",19,Outside Hitter,liz
-Rose-Hulman,"Ebright, Lily",1,Libero,lily
-Rose-Hulman,"Korte, Megan",24,Outside Hitter,mk
-Rose-Hulman,"Cadilli, Marina",8,Defensive Specialist,mo
-Rose-Hulman,"Gross, McKenzie",7,Setter,m
-Rose-Hulman,"Harshany, Ellie",25,Outside Hitter/Defensive Specialist,ellie
-Rose-Hulman,"Potts, Angela",17,Outside Hitter,ang
-Rose-Hulman,"Buchta, Emily",18,Middle Blocker,eb
-Rose-Hulman,"Naibauer, Sydney",10,Middle Blocker,syd
-Rose-Hulman,"Weber, Megan",14,Opposite Hitter,mw
-Rose-Hulman,"O'Dell, Jayden",15,Defensive Specialist,ja
-Rose-Hulman,"Rowan, Claudia",11,Defensive Specialist,cl
-Rose-Hulman,"Fults, Allie",16,Middle Blocker,allie
-Rose-Hulman,"Jones, Aaliyah",23,Middle Blocker,leah
-Rose-Hulman,"Wood, Kate",22,Middle Blocker,kate
-Rose-Hulman,"Rathbun, Kylie",12,Defensive Specialist,ky
-Rose-Hulman,"Koop, Sophia",21,Outside Hitter,koop
-Concordia Chicago,"Beers, Julia",17,Libero,
-Concordia Chicago,"Dicken, Eve",2,Opposite Hitter,
-Concordia Chicago,"Hunt, Lili",10,Middle Blocker,
-Concordia Chicago,"Christensen, Brooke",26,Defensive Specialist,
+﻿Team,Player Name,Player Number,Player Position,Player Abbreviation,GradYear
+Rose-Hulman,"Gregg, Jillian",13,Setter/Opposite Hitter,j,2025
+Rose-Hulman,"Harrison, Sophia",9,Setter,s,2023
+Rose-Hulman,"Canon, Elizabeth",19,Outside Hitter,liz,2023
+Rose-Hulman,"Ebright, Lily",1,Libero,lily,2026
+Rose-Hulman,"Korte, Megan",24,Outside Hitter,mk,2026
+Rose-Hulman,"Cadilli, Marina",8,Defensive Specialist,mo,2026
+Rose-Hulman,"Gross, McKenzie",7,Setter,m,2026
+Rose-Hulman,"Harshany, Ellie",25,Outside Hitter/Defensive Specialist,ellie,2026
+Rose-Hulman,"Potts, Angela",17,Outside Hitter,ang,2025
+Rose-Hulman,"Buchta, Emily",18,Middle Blocker,eb,2025
+Rose-Hulman,"Naibauer, Sydney",10,Middle Blocker,syd,2025
+Rose-Hulman,"Weber, Megan",14,Opposite Hitter,mw,2025
+Rose-Hulman,"O'Dell, Jayden",15,Defensive Specialist,ja,2025
+Rose-Hulman,"Rowan, Claudia",11,Defensive Specialist,cl,2025
+Rose-Hulman,"Fults, Allie",16,Middle Blocker,allie,2024
+Rose-Hulman,"Jones, Aaliyah",23,Middle Blocker,leah,2024
+Rose-Hulman,"Wood, Kate",22,Middle Blocker,kate,2024
+Rose-Hulman,"Rathbun, Kylie",12,Defensive Specialist,ky,2024
+Rose-Hulman,"Koop, Sophia",21,Outside Hitter,koop,2024
+Concordia Chicago,"Beers, Julia",17,Libero,,2024
+Concordia Chicago,"Dicken, Eve",2,Opposite Hitter,,2023
+Concordia Chicago,"Hunt, Lili",10,Middle Blocker,,2025
+Concordia Chicago,"Christensen, Brooke",26,Defensive Specialist,,2025

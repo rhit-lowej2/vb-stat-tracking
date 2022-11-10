@@ -1,6 +1,6 @@
 Create Procedure InsertOutcome
-	@Description varchar(200),
 	@Name varchar(20),
+	@Description varchar(200),
 	@Abbreviation varchar(2)
 AS
 Begin
