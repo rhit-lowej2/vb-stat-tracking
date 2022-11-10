@@ -3,16 +3,18 @@ from webbrowser import get
 import pyodbc
 from datetime import date, datetime as dt
 from sql_utils import CallStoredProc, CallDeleteHit, CallInsertHit, CallStoredProcDisplay
-from crud_utils import * 
+from crud_utils import *
 
 TEAM_NAME = "Rose-Hulman Institute of Technology"
 practice_date = date.today()
 
 def getSproc():
     menu = """0) administrative actions
-1) Display Info 
+1) Display Info
 2) Insert Hit
-3) Undo Last Hit"""
+3) Undo Last Hit
+4) Display Hits
+"""
     actionmenu = """1) Team
 2) Player
 3) Practice
@@ -22,8 +24,8 @@ def getSproc():
     """
     teamMenu = """1) Insert Team
 2) Update Team
-3) Delete Team 
-4) Back  
+3) Delete Team
+4) Back
     """
     playerMenu = """1) Insert Player
 2) Delete Player
@@ -114,7 +116,7 @@ def update_team():
 def delete_team():
     print("input team name")
     name = input()
-    
+
     delete_team_util(cnxn, cursor, name)
 
 def insert_player():
@@ -127,7 +129,7 @@ def insert_player():
     isCap =input()
     print("GradYear")
     GradYear = input()
-    
+
     insert_player_util(cnxn, cursor, name, number, isCap, GradYear, TEAM_NAME)
 
     insert_playsposition(name)
@@ -138,7 +140,7 @@ def delete_player():
     # print("input team name")
     # team_name = input()
     team_name = TEAM_NAME
-    
+
     delete_player_util(cnxn, cursor, name, team_name)
 
 def insert_attends():
@@ -147,7 +149,7 @@ def insert_attends():
     team_name = TEAM_NAME
     print("input pratice date")
     date = input()
-    
+
     insert_attends_util(cnxn, cursor, name, team_name, date)
 
 def delete_attends():
@@ -156,7 +158,7 @@ def delete_attends():
     team_name = TEAM_NAME
     print("input pratice date")
     date = input()
-    
+
     delete_attends_util(cnxn, cursor, name, team_name, date)
 
 def insert_practice():
@@ -166,7 +168,7 @@ def insert_practice():
     global practice_date
     if inputdate:
         practice_date = dt.strptime(inputdate, "%m/%d/%y")
-    
+
     insert_practice_util(cnxn, cursor, team_name, date)
 
 def resume_practice():
@@ -174,26 +176,26 @@ def resume_practice():
     inputdate = input()
     global practice_date
     practice_date = dt.strptime(inputdate, "%m/%d/%y")
-    
+
 def delete_practice():
     team_name = TEAM_NAME
     print("input practice date (mm/dd/yy)")
     date = input()
-    
+
     delete_practice_util(cnxn, cursor, team_name, date)
 
-def display_team(): 
+def display_team():
     for row in CallStoredProcDisplay(cursor, "DisplayTeam"):
         print(row)
     print(" ")
 
-def display_player(): 
+def display_player():
     print("Team: "+ TEAM_NAME)
     for row in CallStoredProcDisplay(cursor, "DisplayPlayer", TEAM_NAME):
         print(row)
     print(" ")
 
-def display_practice(): 
+def display_practice():
     print("Team: "+TEAM_NAME)
     for row in CallStoredProcDisplay(cursor, "DisplayPractice", TEAM_NAME):
         print(row)
@@ -205,6 +207,14 @@ def display_attendance():
         print(row)
     print(" ")
 
+def display_hits():
+    print("input practice id")
+    id = input()
+    for row in CallStoredProcDisplay(cursor, "DisplayHits", id):
+        print(row)
+    print(" ")
+    cnxn.commit()
+
 def insert_outcome():
     print("input outcome name")
     name = input()
@@ -212,19 +222,19 @@ def insert_outcome():
     desc = input()
     print("input abbreviation")
     abbr = input()
-    
+
     insert_outcome_util(cnxn, cursor, name, desc, abbr)
 
 def delete_outcome():
     print("input outcome name")
     name = input()
-    
+
     delete_outcome_util(cnxn, cursor, name)
 
 def insert_position():
     print("input position name")
     position = input()
-    
+
     insert_position_util(cnxn, cursor, position)
 
 def delete_hit(hitid):
@@ -262,11 +272,11 @@ def insert_hit(hitid):
     if hittype == "Set":
         print("input set number")
         setnumber = input()
-    
+
     if hittype == "Attack":
         print("input attack type")
         attacktype = input()
-    
+
     print("input outcome abbreviation")
     outcome= input()
 
@@ -353,9 +363,17 @@ def handleCommand(sproc_name, lasthitidIn):
         insert_attends()
     elif sproc_name == "052":
         delete_attends()
+    elif sproc_name == "4":
+        display_hits()
 
-server = 'titan.csse.rose-hulman.edu' 
-database = 'VBStatsTracker10'
+
+
+
+
+
+server = 'titan.csse.rose-hulman.edu'
+database = 'VBTrackerTester10'
+#database = 'VBStatsTracker10'
 username = 'VBStatsAdmin'
 password = 'help-deed-spin-road-2'
 
